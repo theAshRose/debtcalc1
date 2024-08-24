@@ -8,22 +8,39 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            color: white;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
 
-        h1 {
+        .debtwrapper {
+            background: linear-gradient(64deg, rgb(106, 45, 135) 35%, rgb(169, 61, 105) 101%);
+            width: 100%;
+            padding: 20px 0;
             text-align: center;
         }
 
+        h1 {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
         .calculator {
-            max-width: 600px;
-            margin: 0 auto;
             background-color: white;
+            color: black;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         .input-group {
@@ -37,17 +54,20 @@
 
         .input-group input,
         .input-group select {
-            width: 100%;
+            width: calc(100% - 20px);
+            /* Adjust the width to make space for padding */
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            margin: 0 auto;
+            /* Center the input fields */
         }
 
         button {
             width: 100%;
             padding: 10px;
-            background-color: #28a745;
+            background-color: rgb(106, 45, 135);
             color: white;
             font-size: 18px;
             border: none;
@@ -56,13 +76,14 @@
         }
 
         button:hover {
-            background-color: #218838;
+            background-color: rgb(89, 38, 114);
         }
 
         .results {
             margin-top: 20px;
             padding: 15px;
-            background-color: #e9ecef;
+            background-color: #f4f4f4;
+            color: black;
             border-radius: 4px;
         }
 
@@ -74,197 +95,219 @@
             color: red;
             font-style: italic;
         }
+
+        input {
+            margin-right: 10px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            .calculator {
+                padding: 15px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="debtwrapper">
+        <h1>Debt Relief Calculator</h1>
+        <div class="calculator">
+            <div class="input-group">
+                <label for="debtAmount">Debt Amount ($)</label>
+                <input type="number" id="debtAmount" placeholder="Enter total debt">
+            </div>
+            <div class="input-group">
+                <label for="interestRate">Interest Rate (%)</label>
+                <input type="number" id="interestRate" placeholder="Enter interest rate">
+            </div>
+            <div class="input-group">
+                <label for="interestType">Interest Type</label>
+                <select id="interestType">
+                    <option value="annual">Annual Interest Rate</option>
+                    <option value="monthly">Monthly Interest Rate</option>
+                    <option value="flat">Flat Interest Rate</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="calculationType">Calculate Based On:</label>
+                <select id="calculationType" onchange="toggleInputFields()">
+                    <option value="monthlyPayment">Monthly Payment</option>
+                    <option value="loanTerm">Loan Term</option>
+                </select>
+            </div>
+            <div class="input-group" id="monthlyPaymentGroup">
+                <label for="currentMonthlyPayment">Current Monthly Payment ($)</label>
+                <input type="number" id="currentMonthlyPayment" placeholder="Enter current monthly payment">
+            </div>
+            <div class="input-group" id="loanTermGroup" style="display: none;">
+                <label for="loanTerm">Total Time of Loan (years)</label>
+                <input type="number" id="loanTerm" placeholder="Enter loan term in years">
+            </div>
+            <div class="input-group">
+                <label for="proposedMonthlyPayment">Proposed Monthly Payment ($) (Optional)</label>
+                <input type="number" id="proposedMonthlyPayment" placeholder="Enter proposed monthly payment">
+            </div>
+            <button onclick="calculateDebtRelief()">Calculate</button>
+            <div class="results" id="results"></div>
+        </div>
 
-    <h1>Debt Relief Calculator</h1>
-    <div class="calculator">
-        <div class="input-group">
-            <label for="debtAmount">Debt Amount ($)</label>
-            <input type="number" id="debtAmount" placeholder="Enter total debt">
-        </div>
-        <div class="input-group">
-            <label for="interestRate">Interest Rate (%)</label>
-            <input type="number" id="interestRate" placeholder="Enter interest rate">
-        </div>
-        <div class="input-group">
-            <label for="interestType">Interest Type</label>
-            <select id="interestType">
-                <option value="annual">Annual Interest Rate</option>
-                <option value="monthly">Monthly Interest Rate</option>
-                <option value="flat">Flat Interest Rate</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="calculationType">Calculate Based On:</label>
-            <select id="calculationType" onchange="toggleInputFields()">
-                <option value="monthlyPayment">Monthly Payment</option>
-                <option value="loanTerm">Loan Term</option>
-            </select>
-        </div>
-        <div class="input-group" id="monthlyPaymentGroup">
-            <label for="currentMonthlyPayment">Current Monthly Payment ($)</label>
-            <input type="number" id="currentMonthlyPayment" placeholder="Enter current monthly payment">
-        </div>
-        <div class="input-group" id="loanTermGroup" style="display: none;">
-            <label for="loanTerm">Total Time of Loan (years)</label>
-            <input type="number" id="loanTerm" placeholder="Enter loan term in years">
-        </div>
-        <div class="input-group">
-            <label for="proposedMonthlyPayment">Proposed Monthly Payment ($) (Optional)</label>
-            <input type="number" id="proposedMonthlyPayment" placeholder="Enter proposed monthly payment">
-        </div>
-        <button onclick="calculateDebtRelief()">Calculate</button>
-        <div class="results" id="results"></div>
-    </div>
-
-    <script>
-        function toggleInputFields() {
-            const calculationType = document.getElementById('calculationType').value;
-            if (calculationType === 'monthlyPayment') {
-                document.getElementById('monthlyPaymentGroup').style.display = 'block';
-                document.getElementById('loanTermGroup').style.display = 'none';
-            } else {
-                document.getElementById('monthlyPaymentGroup').style.display = 'none';
-                document.getElementById('loanTermGroup').style.display = 'block';
+        <script>
+            function toggleInputFields() {
+                const calculationType = document.getElementById('calculationType').value;
+                if (calculationType === 'monthlyPayment') {
+                    document.getElementById('monthlyPaymentGroup').style.display = 'block';
+                    document.getElementById('loanTermGroup').style.display = 'none';
+                } else {
+                    document.getElementById('monthlyPaymentGroup').style.display = 'none';
+                    document.getElementById('loanTermGroup').style.display = 'block';
+                }
             }
-        }
 
-        function calculateDebtRelief() {
-    // Get user inputs
-    let principal = parseFloat(document.getElementById('debtAmount').value);
-    let annualInterestRate = parseFloat(document.getElementById('interestRate').value);
-    let currentMonthlyPayment = parseFloat(document.getElementById('currentMonthlyPayment').value);
-    let proposedMonthlyPayment = parseFloat(document.getElementById('proposedMonthlyPayment').value);
-    let interestType = document.getElementById('interestType').value;
-    let calculationType = document.getElementById('calculationType').value;
+            function calculateDebtRelief() {
+                // Get user inputs
+                let principal = parseFloat(document.getElementById('debtAmount').value);
+                let annualInterestRate = parseFloat(document.getElementById('interestRate').value);
+                let currentMonthlyPayment = parseFloat(document.getElementById('currentMonthlyPayment').value);
+                let proposedMonthlyPayment = parseFloat(document.getElementById('proposedMonthlyPayment').value);
+                let interestType = document.getElementById('interestType').value;
+                let calculationType = document.getElementById('calculationType').value;
 
-    // Validate inputs
-    if (isNaN(principal) || isNaN(annualInterestRate) || principal <= 0 || annualInterestRate < 0 || (calculationType === 'monthlyPayment' && isNaN(currentMonthlyPayment))) {
-        document.getElementById('results').innerHTML = "<div class='warning'>Please enter valid values for all required fields.</div>";
-        return;
-    }
-
-    // Convert annual interest rate to monthly interest rate
-    let monthlyInterestRate;
-    if (interestType === 'annual') {
-        monthlyInterestRate = (annualInterestRate / 100) / 12;
-    } else if (interestType === 'monthly') {
-        monthlyInterestRate = (annualInterestRate / 100); // Already monthly
-    } else if (interestType === 'flat') {
-        monthlyInterestRate = annualInterestRate / 100; // Flat rate scenario
-    }
-
-    let monthlyPayment;
-    let nPayments;
-
-    if (calculationType === 'monthlyPayment') {
-        // If calculating based on current monthly payment, calculate the loan term
-        if (currentMonthlyPayment <= principal * monthlyInterestRate) {
-            document.getElementById('results').innerHTML = "<div class='warning'>The current monthly payment is too low to cover the interest.</div>";
-            return;
-        }
-
-        nPayments = Math.log(currentMonthlyPayment / (currentMonthlyPayment - principal * monthlyInterestRate)) / Math.log(1 + monthlyInterestRate);
-
-        if (isNaN(nPayments) || !isFinite(nPayments)) {
-            document.getElementById('results').innerHTML = "<div class='warning'>The current monthly payment is not sufficient to pay off the loan.</div>";
-            return;
-        }
-
-        // Calculate total interest and total amount paid
-        let totalPaidStandard = currentMonthlyPayment * nPayments;
-        let totalInterestStandard = totalPaidStandard - principal;
-
-        // Display results for the standard payment scenario
-        displayResults(null, totalInterestStandard, totalPaidStandard, nPayments / 12); // nPayments is in months, converting to years
-    } else {
-        // If calculating based on loan term, use the existing logic
-        nPayments = parseFloat(document.getElementById('loanTerm').value) * 12;
-
-        // Calculate the standard monthly payment using the amortization formula (for annual and monthly interest rates)
-        if (interestType !== 'flat') {
-            monthlyPayment = (principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, nPayments)) / (Math.pow(1 + monthlyInterestRate, nPayments) - 1);
-        } else {
-            monthlyPayment = principal / nPayments;
-        }
-
-        if (isNaN(monthlyPayment) || !isFinite(monthlyPayment)) {
-            document.getElementById('results').innerHTML = "<div class='warning'>Error in calculating the monthly payment.</div>";
-            return;
-        }
-
-        // Calculate total amount paid and total interest paid with the standard monthly payment
-        let totalPaidStandard = monthlyPayment * nPayments;
-        let totalInterestStandard = totalPaidStandard - principal;
-
-        // Variables to track the proposed payment calculations
-        let remainingBalance = principal;
-        let totalInterestProposed = 0;
-        let totalPaidProposed = 0;
-
-        if (!isNaN(proposedMonthlyPayment) && proposedMonthlyPayment > 0) {
-            // Calculate the total interest paid and total amount paid with the proposed payment
-            while (remainingBalance > 0) {
-                let interestForMonth = remainingBalance * monthlyInterestRate;
-                let principalPaid = proposedMonthlyPayment - interestForMonth;
-
-                if (principalPaid <= 0) {
-                    // If the principal paid is less than or equal to 0, the proposed monthly payment is too low
-                    document.getElementById('results').innerHTML = "<div class='warning'>The proposed monthly payment is too low to cover the interest.</div>";
+                // Validate inputs
+                if (isNaN(principal) || isNaN(annualInterestRate) || principal <= 0 || annualInterestRate < 0 ||
+                    (calculationType === 'monthlyPayment' && isNaN(currentMonthlyPayment))) {
+                    document.getElementById('results').innerHTML = "<div class='warning'>Please enter valid values for all required fields.</div>";
                     return;
                 }
 
-                remainingBalance -= principalPaid;
-                totalInterestProposed += interestForMonth;
-                totalPaidProposed += proposedMonthlyPayment;
+                // Convert annual interest rate to monthly interest rate
+                let monthlyInterestRate;
+                if (interestType === 'annual') {
+                    monthlyInterestRate = (annualInterestRate / 100) / 12;
+                } else if (interestType === 'monthly') {
+                    monthlyInterestRate = (annualInterestRate / 100); // Already monthly
+                } else if (interestType === 'flat') {
+                    monthlyInterestRate = annualInterestRate / 100;
+                }
+
+                let currentLoanTerm;
+                let currentTotalPaid, currentTotalInterest;
+                let proposedLoanTerm = null, proposedTotalPaid = null, proposedTotalInterest = null, interestSavings = null, loanTermReduction = null;
+
+                // Current payment calculations
+                if (interestType === 'flat') {
+                    // Flat interest scenario
+                    let loanTermYears = parseFloat(document.getElementById('loanTerm').value);
+
+                    if (isNaN(loanTermYears) || loanTermYears <= 0) {
+                        document.getElementById('results').innerHTML = "<div class='warning'>Please enter a valid loan term.</div>";
+                        return;
+                    }
+
+                    let totalInterest = principal * monthlyInterestRate * loanTermYears;
+                    currentTotalPaid = principal + totalInterest;
+                    currentMonthlyPayment = currentTotalPaid / (loanTermYears * 12);
+                    currentTotalInterest = totalInterest;
+                    currentLoanTerm = loanTermYears;
+                } else {
+                    // Reducing balance (amortized) interest scenario
+                    if (calculationType === 'monthlyPayment') {
+                        // Calculate the loan term based on current monthly payment
+                        if (currentMonthlyPayment <= principal * monthlyInterestRate) {
+                            document.getElementById('results').innerHTML = "<div class='warning'>The current monthly payment is too low to cover the interest.</div>";
+                            return;
+                        }
+
+                        currentLoanTerm = Math.log(currentMonthlyPayment / (currentMonthlyPayment - principal * monthlyInterestRate)) / Math.log(1 + monthlyInterestRate);
+
+                        if (isNaN(currentLoanTerm) || !isFinite(currentLoanTerm)) {
+                            document.getElementById('results').innerHTML = "<div class='warning'>The current monthly payment is not sufficient to pay off the loan.</div>";
+                            return;
+                        }
+
+                        currentTotalPaid = currentMonthlyPayment * currentLoanTerm;
+                        currentTotalInterest = currentTotalPaid - principal;
+                        currentLoanTerm = currentLoanTerm / 12; // Convert months to years
+                    } else {
+                        // Calculate based on loan term
+                        currentLoanTerm = parseFloat(document.getElementById('loanTerm').value);
+                        if (isNaN(currentLoanTerm) || currentLoanTerm <= 0) {
+                            document.getElementById('results').innerHTML = "<div class='warning'>Please enter a valid loan term.</div>";
+                            return;
+                        }
+                        let nPayments = currentLoanTerm * 12;
+                        currentMonthlyPayment = (principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, nPayments)) / (Math.pow(1 + monthlyInterestRate, nPayments) - 1);
+
+                        if (isNaN(currentMonthlyPayment) || !isFinite(currentMonthlyPayment)) {
+                            document.getElementById('results').innerHTML = "<div class='warning'>Error in calculating the monthly payment.</div>";
+                            return;
+                        }
+
+                        currentTotalPaid = currentMonthlyPayment * nPayments;
+                        currentTotalInterest = currentTotalPaid - principal;
+                    }
+                }
+
+                // Proposed payment calculations (if provided)
+                if (!isNaN(proposedMonthlyPayment) && proposedMonthlyPayment > 0) {
+                    let remainingBalance = principal;
+                    proposedTotalInterest = 0;
+                    proposedTotalPaid = 0;
+                    proposedLoanTerm = 0;
+
+                    while (remainingBalance > 0) {
+                        let interestForMonth = remainingBalance * monthlyInterestRate;
+                        let principalPaid = proposedMonthlyPayment - interestForMonth;
+
+                        if (principalPaid <= 0) {
+                            document.getElementById('results').innerHTML = "<div class='warning'>The proposed monthly payment is too low to cover the interest.</div>";
+                            return;
+                        }
+
+                        remainingBalance -= principalPaid;
+                        proposedTotalInterest += interestForMonth;
+                        proposedTotalPaid += proposedMonthlyPayment;
+                        proposedLoanTerm++;
+                    }
+
+                    proposedLoanTerm = proposedLoanTerm / 12; // Convert months to years
+
+                    // Calculate savings
+                    interestSavings = currentTotalInterest - proposedTotalInterest;
+                    loanTermReduction = (currentLoanTerm * 12) - (proposedLoanTerm * 12); // Calculate difference in months
+                }
+
+                // Display results
+                displayResults(currentMonthlyPayment, currentTotalInterest, currentTotalPaid, currentLoanTerm, "current", proposedTotalInterest, proposedTotalPaid, interestSavings, loanTermReduction, proposedLoanTerm);
             }
 
-            // Calculate interest savings
-            let interestSavings = totalInterestStandard - totalInterestProposed;
+            function displayResults(currentMonthlyPayment, currentTotalInterest, currentTotalPaid, currentLoanTerm, paymentType = "current", proposedTotalInterest = null, proposedTotalPaid = null, interestSavings = null, loanTermReduction = null, proposedLoanTerm = null) {
+                let resultsHTML = `<div class="result-item"><strong>${paymentType.charAt(0).toUpperCase() + paymentType.slice(1)} Monthly Payment:</strong> $${currentMonthlyPayment.toFixed(2)}</div>`;
+                resultsHTML += `<div class="result-item"><strong>Total Interest Paid (${paymentType.charAt(0).toUpperCase() + paymentType.slice(1)}):</strong> $${currentTotalInterest.toFixed(2)}</div>`;
+                resultsHTML += `<div class="result-item"><strong>Total Amount Paid (${paymentType.charAt(0).toUpperCase() + paymentType.slice(1)}):</strong> $${currentTotalPaid.toFixed(2)}</div>`;
+                resultsHTML += `<div class="result-item"><strong>Calculated Loan Term (${paymentType.charAt(0).toUpperCase() + paymentType.slice(1)}):</strong> ${currentLoanTerm.toFixed(2)} years</div>`;
 
-            // Display results for the proposed payment scenario
-            displayResults(monthlyPayment, totalInterestStandard, totalPaidStandard, nPayments / 12, totalInterestProposed, totalPaidProposed, interestSavings);
-        } else {
-            // Display results for the standard payment scenario
-            displayResults(monthlyPayment, totalInterestStandard, totalPaidStandard, nPayments / 12);
-        }
-    }
-}
+                if (proposedTotalInterest !== null && !isNaN(proposedTotalInterest)) {
+                    resultsHTML += `<div class="result-item"><strong>Proposed Monthly Payment:</strong> $${(proposedTotalPaid / (proposedLoanTerm * 12)).toFixed(2)}</div>`;
+                    resultsHTML += `<div class="result-item"><strong>Total Interest Paid (Proposed):</strong> $${proposedTotalInterest.toFixed(2)}</div>`;
+                    resultsHTML += `<div class="result-item"><strong>Total Amount Paid (Proposed):</strong> $${proposedTotalPaid.toFixed(2)}</div>`;
+                    resultsHTML += `<div class="result-item"><strong>Loan Term (Proposed):</strong> ${proposedLoanTerm.toFixed(2)} years</div>`;
+                    resultsHTML += `<div class="result-item"><strong>Interest Savings:</strong> $${interestSavings.toFixed(2)}</div>`;
+                    resultsHTML += `<div class="result-item"><strong>Loan Term Reduction:</strong> ${(loanTermReduction / 12).toFixed(2)} years</div>`;
+                }
 
-function displayResults(monthlyPayment, totalInterestStandard, totalPaidStandard, loanTermInYears = null, totalInterestProposed = null, totalPaidProposed = null, interestSavings = null) {
-    let resultsHTML = '';
+                document.getElementById('results').innerHTML = resultsHTML;
+            }
 
-    if (monthlyPayment !== null && !isNaN(monthlyPayment)) {
-        resultsHTML += `<div class="result-item"><strong>Standard Monthly Payment:</strong> $${monthlyPayment.toFixed(2)}</div>`;
-    }
-    if (totalInterestStandard !== null && !isNaN(totalInterestStandard)) {
-        resultsHTML += `<div class="result-item"><strong>Total Interest Paid (Standard):</strong> $${totalInterestStandard.toFixed(2)}</div>`;
-    }
-    if (totalPaidStandard !== null && !isNaN(totalPaidStandard)) {
-        resultsHTML += `<div class="result-item"><strong>Total Amount Paid (Standard):</strong> $${totalPaidStandard.toFixed(2)}</div>`;
-    }
-    if (loanTermInYears !== null && !isNaN(loanTermInYears)) {
-        resultsHTML += `<div class="result-item"><strong>Calculated Loan Term:</strong> ${loanTermInYears.toFixed(2)} years</div>`;
-    }
-    if (totalInterestProposed !== null && !isNaN(totalInterestProposed)) {
-        resultsHTML += `<div class="result-item"><strong>Total Interest Paid with Proposed Payment:</strong> $${totalInterestProposed.toFixed(2)}</div>`;
-    }
-    if (totalPaidProposed !== null && !isNaN(totalPaidProposed)) {
-        resultsHTML += `<div class="result-item"><strong>Total Amount Paid with Proposed Payment:</strong> $${totalPaidProposed.toFixed(2)}</div>`;
-    }
-    if (interestSavings !== null && !isNaN(interestSavings)) {
-        resultsHTML += `<div class="result-item"><strong>Interest Savings with Proposed Payment:</strong> $${interestSavings.toFixed(2)}</div>`;
-    }
-
-    document.getElementById('results').innerHTML = resultsHTML;
-}
-
-
-    </script>
-
+        </script>
+    </div>
 </body>
 
 </html>
